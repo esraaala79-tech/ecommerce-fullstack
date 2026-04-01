@@ -1,0 +1,160 @@
+import side from '../images/Side Image.png';
+import icon from '../images/Icon-Google.png';
+import axios from 'axios'; 
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../AuthContext/AuthContext';
+
+export const Sign = () => {
+  const [isLogin, setIsLogin] = useState(false);
+  const { isLoggedIn, login, SetTheEmail } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/home');
+    }
+  }, [isLoggedIn, navigate]);
+
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    const { name, email, password } = formData;
+
+    if (!name || !email || !password) return setError('Please fill in all fields');
+    if (password.length < 6) return setError('Password must be at least 6 characters');
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/register', {
+        username: name,
+        email,
+        password
+      });
+
+      const data = response.data;
+      setSuccess('Account created successfully!');
+      localStorage.setItem('token', data.token);
+      setFormData({ name: '', email: '', password: '' });
+
+    } catch (err) {
+      if (err.response) setError(err.response.data.msg || 'Server error');
+      else if (err.request) setError('No response from server');
+      else setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const { email, password } = formData;
+
+    if (!email || !password) return setError('Please fill in all fields');
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/login', { email, password });
+      const data = response.data;
+
+      // Fetch user data if endpoint exists
+      const userResponse = await axios.get(`http://localhost:8000/api/email/${encodeURIComponent(email)}`);
+      const userData = userResponse.data;
+
+      const userInfo = {
+        user_email: email,
+        user_username: userData.username,
+        user_address: userData.address
+      };
+
+      SetTheEmail(userInfo);
+      login(data.token, userInfo, userData._id);
+      setSuccess('Logged in successfully!');
+      setFormData({ email: '', password: '' });
+      navigate('/home');
+
+    } catch (err) {
+      if (err.response) setError(err.response.data.msg || 'Server error');
+      else if (err.request) setError('No response from server');
+      else setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container-fluid">
+      <div className="row min-vh-100 align-items-center">
+        <div className="col-lg-7 d-none d-lg-block p-0">
+          <img src={side} alt="" className="w-80 h-100 object-fit-cover" />
+        </div>
+
+        <div className="col-lg-5 d-flex justify-content-center">
+          <div className="w-75">
+            <h4 className="mb-3">{isLogin ? "Login" : "Create an account"}</h4>
+            <p className="mb-3">Enter your details below</p>
+
+            {error && <div className="alert alert-danger">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
+
+            {isLogin ? (
+              <form onSubmit={handleLogin}>
+                <input type="email" name="email" className="form-control mb-4 p-3 border-0 border-bottom"
+                  placeholder="Email or Phone Number" value={formData.email} onChange={handleChange} required />
+                <input type="password" name="password" className="form-control mb-4 p-3 border-0 border-bottom"
+                  placeholder="Password" value={formData.password} onChange={handleChange} required />
+                <div className='d-flex justify-content-between align-items-center'>
+                  <button type="submit" className="btn btn-danger w-50 p-3">Login</button>
+                  <p className='text-danger' style={{ cursor: "pointer" }}>Forget Password</p>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleRegister}>
+                <input type="text" name="name" className="form-control mb-4 p-3 border-0 border-bottom"
+                  placeholder="Name" value={formData.name} onChange={handleChange} required />
+                <input type="email" name="email" className="form-control mb-4 p-3 border-0 border-bottom"
+                  placeholder="Email or Phone Number" value={formData.email} onChange={handleChange} required />
+                <input type="password" name="password" className="form-control mb-4 p-3 border-0 border-bottom"
+                  placeholder="Password" value={formData.password} onChange={handleChange} required />
+                <button type="submit" className="btn btn-danger w-100 p-3" disabled={loading || success}>
+                  {loading ? 'Creating Account...' : success ? 'Account Created!' : 'Create Account'}
+                </button>
+                <button className="btn border mt-4 w-100 p-3">
+                  <img src={icon} alt="" className="pe-2" />
+                  Sign up with Google
+                </button>
+              </form>
+            )}
+
+            <p className="text-center mt-3">
+              {isLogin ? "Don't have an account?" : "Already have an account?"}
+              <span className="ms-2 text-dark fw-bold" style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setError('');
+                  setSuccess('');
+                  setFormData({ name: '', email: '', password: '' });
+                }}>
+                {isLogin ? "Sign Up" : "Login"}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

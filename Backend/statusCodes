@@ -1,0 +1,77 @@
+1xx - Informational Responses
+Code	Name	Description
+100	Continue	Server has received request headers, client should proceed
+101	Switching Protocols	Server is switching protocols as requested
+102	Processing	Server is processing the request (WebDAV)
+103	Early Hints	Used to return some response headers before final response
+
+2xx - Success
+Code	Name	Description
+200	OK	Standard success response
+201	Created	Resource successfully created (e.g., new user)
+202	Accepted	Request accepted but not yet processed
+203	Non-Authoritative Information	Response from a third-party proxy
+204	No Content	Success but no content to return
+205	Reset Content	Tells client to reset document view
+206	Partial Content	Partial content (used for range requests)
+207	Multi-Status	Multiple status codes (WebDAV)
+208	Already Reported	Members already reported (WebDAV)
+226	IM Used	Server has fulfilled request for resource
+
+3xx - Redirection
+Code	Name	Description
+300	Multiple Choices	Multiple options for the resource
+301	Moved Permanently	Resource permanently moved to new URL
+302	Found	Temporary redirect (common)
+303	See Other	Redirect to another URL with GET
+304	Not Modified	Resource not modified (use cache)
+305	Use Proxy	Must use proxy (deprecated)
+306	Switch Proxy	No longer used
+307	Temporary Redirect	Temporary redirect (preserves method)
+308	Permanent Redirect	Permanent redirect (preserves method)
+
+4xx - Client Errors
+Code	Name	Description
+400	Bad Request	Server cannot process request (invalid syntax)
+401	Unauthorized	Authentication required
+402	Payment Required	Reserved for future use
+403	Forbidden	Server understood but refuses to authorize
+404	Not Found	Resource not found
+405	Method Not Allowed	HTTP method not allowed
+406	Not Acceptable	Cannot generate content per Accept headers
+407	Proxy Authentication Required	Authentication with proxy required
+408	Request Timeout	Server timed out waiting for request
+409	Conflict	Request conflicts with server state (e.g., duplicate email)
+410	Gone	Resource permanently deleted
+411	Length Required	Content-Length header required
+412	Precondition Failed	Precondition in headers failed
+413	Payload Too Large	Request entity too large
+414	URI Too Long	URI too long
+415	Unsupported Media Type	Media type not supported
+416	Range Not Satisfiable	Requested range not satisfiable
+417	Expectation Failed	Expect header cannot be met
+418	I'm a teapot	April Fools joke (RFC 2324)
+421	Misdirected Request	Request sent to wrong server
+422	Unprocessable Entity	Validation errors (WebDAV)
+423	Locked	Resource is locked (WebDAV)
+424	Failed Dependency	Request failed due to previous request
+425	Too Early	Server unwilling to risk processing
+426	Upgrade Required	Client should upgrade to different protocol
+428	Precondition Required	Server requires conditional requests
+429	Too Many Requests	Rate limiting exceeded
+431	Request Header Fields Too Large	Headers too large
+451	Unavailable For Legal Reasons	Blocked for legal reasons
+
+5xx - Server Errors
+Code	Name	Description
+500	Internal Server Error	Generic server error
+501	Not Implemented	Server cannot fulfill request
+502	Bad Gateway	Invalid response from upstream server
+503	Service Unavailable	Server temporarily unavailable
+504	Gateway Timeout	Upstream server timed out
+505	HTTP Version Not Supported	HTTP version not supported
+506	Variant Also Negotiates	Transparent content negotiation error
+507	Insufficient Storage	Server cannot store representation (WebDAV)
+508	Loop Detected	Infinite loop detected (WebDAV)
+510	Not Extended	Further extensions required
+511	Network Authentication Required	Network authentication required
